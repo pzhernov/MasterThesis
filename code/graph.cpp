@@ -29,9 +29,7 @@ int Graph::GetVertexCount() {
 }
 
 void Graph::AddEdge(int first_vertex, int second_vertex) {
-  if (!GetEdge(first_vertex, second_vertex)) {
-    edges.push_back(std::make_pair(first_vertex, second_vertex));
-  }
+  edges.push_back(std::make_pair(first_vertex, second_vertex));
 }
 
 bool Graph::GetEdge(int first_vertex, int second_vertex) {
@@ -70,10 +68,11 @@ double Graph::EstimateGamma() {
   double xx = 0;
   for (std::vector<int>::iterator degree = vertex_degree.begin();
        degree != vertex_degree.end(); ++degree) {
-    xy -= (degree - vertex_degree.begin()) * log(*degree);
-    x -= degree - vertex_degree.begin();
+    xy -= static_cast<double>(degree - vertex_degree.begin()) * log(*degree);
+    x -= static_cast<double>(degree - vertex_degree.begin());
     y += log(*degree);
-    xx += (degree - vertex_degree.begin()) * (degree - vertex_degree.begin());
+    xx += static_cast<double>(degree - vertex_degree.begin())
+       * static_cast<double>(degree - vertex_degree.begin());
   }
   xy /= vertex_degree.size();
   x /= vertex_degree.size();
