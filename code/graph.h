@@ -1,7 +1,8 @@
+/*** graph.h ***/
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
-#include <list>
+#include <set>
 #include <utility>
 
 class Graph {
@@ -16,7 +17,7 @@ class Graph {
   double EstimateGamma();
  protected:
   int vertex;
-  std::list<std::pair<int, int> > edges;
+  std::set<std::pair<int, int> > edges;
 };
 
 #endif
