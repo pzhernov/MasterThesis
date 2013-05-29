@@ -57,26 +57,33 @@ double Graph::EstimateGamma() {
   for (int index = 0; index < vertex_degree.size(); ++index) {
     double P = static_cast<double>(count_vertex_degree[vertex_degree[index]]);
     P /= GetVertexCount();
+    probability.push_back(P);
   }
 
   // P = c * d^(-gamma)
-  // ln(P) = ln(c) - gamma * d
+  // ln(P) = ln(c) - gamma * ln(d)
   // y_t = a + b * x_t + epsilon_t
   // y_t = ln(P)
   // a = ln(c)
   // b = gamma
-  // x_t = -d
+  // x_t = -ln(d)
   double xy = 0;
   double x = 0;
   double y = 0;
   double xx = 0;
   for (int index = 0; index < vertex_degree.size(); ++index) {
-    xy -= static_cast<double>(vertex_degree[index])
-        * log(static_cast<double>(probability[index]));
-    x -= static_cast<double>(vertex_degree[index]);
-    y += log(static_cast<double>(probability[index]));
-    xx += static_cast<double>(vertex_degree[index] * vertex_degree[index]);
+    const double EPS = 0.000000001;
+    if (vertex_degree[index] == 0 || probability[index] < EPS) {
+      continue;
+    }
+    double dx = -log(static_cast<double>(vertex_degree[index]));
+    double dy = log(probability[index]);
+    xy += dx * dy;
+    x += dx;
+    y += dy;
+    xx += dx * dx;
   }
+
   xy /= vertex_degree.size();
   x /= vertex_degree.size();
   y /= vertex_degree.size();
