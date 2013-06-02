@@ -71,23 +71,24 @@ double Graph::EstimateGamma() {
   double x = 0;
   double y = 0;
   double xx = 0;
+  int count = 0;
   for (int index = 0; index < vertex_degree.size(); ++index) {
     const double EPS = 0.000000001;
-    if (vertex_degree[index] == 0 || probability[index] < EPS) {
-      continue;
+    if (vertex_degree[index] >= 150 && vertex_degree[index] <= 350 && probability[index] >= EPS) {
+      double dx = -log(static_cast<double>(vertex_degree[index]));
+      double dy = log(probability[index]);
+      xy += dx * dy;
+      x += dx;
+      y += dy;
+      xx += dx * dx;
+      ++count;
     }
-    double dx = -log(static_cast<double>(vertex_degree[index]));
-    double dy = log(probability[index]);
-    xy += dx * dy;
-    x += dx;
-    y += dy;
-    xx += dx * dx;
   }
 
-  xy /= vertex_degree.size();
-  x /= vertex_degree.size();
-  y /= vertex_degree.size();
-  xx /= vertex_degree.size();
+  xy /= count;
+  x /= count;
+  y /= count;
+  xx /= count;
   double gamma = (xy - x * y) / (xx - x * x); // Ordinary least squares (OLS)
   return gamma;
 }
