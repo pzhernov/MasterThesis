@@ -10,7 +10,7 @@ class RealGraph : public Graph {
   RealGraph();
   RealGraph(const RealGraph& real_graph);
   ~RealGraph();
-  void LoadRealGraph(int vertex_count, const std::string& links);
+  void LoadRealGraph(const std::string& links);
 };
 
 #endif

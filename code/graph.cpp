@@ -30,7 +30,7 @@ bool Graph::GetEdge(int first_vertex, int second_vertex) {
   return edges.find(std::make_pair(first_vertex, second_vertex)) != edges.end();
 }
 
-double Graph::EstimateGamma() {
+double Graph::EstimateKsi() {
   // Evaluate vertex degrees
   std::vector<int> vertex_degree(GetVertexCount(), 0);
   //std::vector<int> vertex_in_degree(GetVertexCount(), 0);
@@ -60,12 +60,12 @@ double Graph::EstimateGamma() {
     probability.push_back(P);
   }
 
-  // P = c * d^(-gamma)
-  // ln(P) = ln(c) - gamma * ln(d)
+  // P = c * d^(-ksi)
+  // ln(P) = ln(c) - ksi * ln(d)
   // y_t = a + b * x_t + epsilon_t
   // y_t = ln(P)
   // a = ln(c)
-  // b = gamma
+  // b = ksi
   // x_t = -ln(d)
   double xy = 0;
   double x = 0;
@@ -74,7 +74,7 @@ double Graph::EstimateGamma() {
   int count = 0;
   for (int index = 0; index < vertex_degree.size(); ++index) {
     const double EPS = 0.000000001;
-    if (vertex_degree[index] >= 150 && vertex_degree[index] <= 350 && probability[index] >= EPS) {
+    if (vertex_degree[index] > 10 && probability[index] >= EPS) {
       double dx = -log(static_cast<double>(vertex_degree[index]));
       double dy = log(probability[index]);
       xy += dx * dy;
@@ -89,6 +89,6 @@ double Graph::EstimateGamma() {
   x /= count;
   y /= count;
   xx /= count;
-  double gamma = (xy - x * y) / (xx - x * x); // Ordinary least squares (OLS)
-  return gamma;
+  double ksi = (xy - x * y) / (xx - x * x); // Ordinary least squares (OLS)
+  return ksi;
 }
