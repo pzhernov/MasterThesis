@@ -5,9 +5,9 @@
 #include <cstdlib>
 #include <iostream>
 
-const int SIMULATED_TIME = 10000;
+const int SIMULATED_TIME = 100000;
 const int RANDOM_SEED = 729531;
-const int REPEATINGS = 10;
+const int REPEATINGS = 3;
 const double EPS = 1e-3;
 
 // Model parameters to choose from
