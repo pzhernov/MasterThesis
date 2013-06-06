@@ -14,7 +14,7 @@ class Graph {
   int GetVertexCount();
   void AddEdge(int first_vertex, int second_vertex);
   bool GetEdge(int first_vertex, int second_vertex);
-  double EstimateKsi();
+  double EstimateXi();
  protected:
   int vertex;
   std::set<std::pair<int, int> > edges;

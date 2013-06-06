@@ -23,28 +23,28 @@ int main() {
   RealGraph real_graph;
   real_graph.LoadRealGraph("tt3.0");
 
-  // Estimate real graph ksi
-  double real_graph_ksi = real_graph.EstimateKsi();
-  std::cout << "real_graph_ksi = " << real_graph_ksi << std::endl;
+  // Estimate real graph xi
+  double real_graph_xi = real_graph.EstimateXi();
+  std::cout << "real_graph_xi = " << real_graph_xi << std::endl;
   
   // Prepare variables for best parameter values
-  double difference_in_ksi = -1.0;
+  double difference_in_xi = -1.0;
   double best_alpha = -1.0;
   double best_beta = -1.0;
   double best_delta_in = -1.0;
-  double best_simulated_graph_ksi = -1.0;
-  double best_simulated_graph_variance_ksi = -1.0;
+  double best_simulated_graph_xi = -1.0;
+  double best_simulated_graph_variance_xi = -1.0;
 
   // Loop by parameter values
   for (int a_i = 0; a_i < sizeof(alpha) / sizeof(alpha[0]); ++a_i) {
     for (int b_i = 0; b_i < sizeof(beta) / sizeof(beta[0]); ++b_i) {
       if (alpha[a_i] + beta[b_i] < 1.0 - EPS) {
         for (int d_i = 0; d_i < sizeof(delta_in) / sizeof(delta_in[0]); ++d_i) {
-          // Prepare mean ksi and variance of ksi
-          double simulated_graph_mean_ksi = 0.0;
-          double simulated_graph_variance_ksi = 0.0;
+          // Prepare mean xi and variance of xi
+          double simulated_graph_mean_xi = 0.0;
+          double simulated_graph_variance_xi = 0.0;
           
-          // Generate simulated graph REPEATINGS times and take the mean ksi
+          // Generate simulated graph REPEATINGS times and take the mean xi
           for (int index = 0; index < REPEATINGS; ++index) {
             // Create simulated graph with the chosen parameter values
             SimulatedGraph simulated_graph;
@@ -53,39 +53,39 @@ int main() {
             simulated_graph.SetDeltaIn(delta_in[d_i]);
             simulated_graph.GenerateGraph(SIMULATED_TIME);
 
-            // Estimate simulated graph ksi, mean ksi and variance of ksi
-            double simulated_graph_ksi = simulated_graph.EstimateKsi();
-            simulated_graph_mean_ksi += simulated_graph_ksi;
-            simulated_graph_variance_ksi +=
-                simulated_graph_ksi * simulated_graph_ksi;
+            // Estimate simulated graph xi, mean xi and variance of xi
+            double simulated_graph_xi = simulated_graph.EstimateXi();
+            simulated_graph_mean_xi += simulated_graph_xi;
+            simulated_graph_variance_xi +=
+                simulated_graph_xi * simulated_graph_xi;
           }
 
-          // Evaluate mean and variance of ksi
-          simulated_graph_mean_ksi /= REPEATINGS;
-          simulated_graph_variance_ksi /= REPEATINGS;
-          simulated_graph_variance_ksi -=
-              simulated_graph_mean_ksi * simulated_graph_mean_ksi;
+          // Evaluate mean and variance of xi
+          simulated_graph_mean_xi /= REPEATINGS;
+          simulated_graph_variance_xi /= REPEATINGS;
+          simulated_graph_variance_xi -=
+              simulated_graph_mean_xi * simulated_graph_mean_xi;
           
           // Save parameter values for the best case
-          // (difference in real graph ksi and simulated graph ksi is minimal)
-          if (difference_in_ksi < 0 ||
-              fabs(real_graph_ksi - simulated_graph_mean_ksi) <
-              difference_in_ksi) {
-            difference_in_ksi =
-                fabs(real_graph_ksi - simulated_graph_mean_ksi);
+          // (difference in real graph xi and simulated graph xi is minimal)
+          if (difference_in_xi < 0 ||
+              fabs(real_graph_xi - simulated_graph_mean_xi) <
+              difference_in_xi) {
+            difference_in_xi =
+                fabs(real_graph_xi - simulated_graph_mean_xi);
             best_alpha = alpha[a_i];
             best_beta = beta[b_i];
             best_delta_in = delta_in[d_i];
-            best_simulated_graph_ksi = simulated_graph_mean_ksi;
-            best_simulated_graph_variance_ksi = simulated_graph_variance_ksi;
+            best_simulated_graph_xi = simulated_graph_mean_xi;
+            best_simulated_graph_variance_xi = simulated_graph_variance_xi;
           }
 
           // Output current results
           std::cout << "alpha = " << alpha[a_i]
                     << ", beta = " << beta[b_i]
                     << ", delta_in = " << delta_in[d_i]
-                    << ": simulated_graph_ksi = " << simulated_graph_mean_ksi
-                    << " +- " << simulated_graph_variance_ksi
+                    << ": simulated_graph_xi = " << simulated_graph_mean_xi
+                    << " +- " << simulated_graph_variance_xi
                     << std::endl;
         }
       }
@@ -97,10 +97,10 @@ int main() {
             << "alpha = " << best_alpha
             << ", beta = " << best_beta
             << ", delta_in = " << best_delta_in
-            << ": simulated_graph_ksi = " << best_simulated_graph_ksi
-            << ": +- " << best_simulated_graph_variance_ksi
+            << ": simulated_graph_xi = " << best_simulated_graph_xi
+            << ": +- " << best_simulated_graph_variance_xi
             << std::endl
-            << "Difference in ksi = " << difference_in_ksi << std::endl;
+            << "Difference in xi = " << difference_in_xi << std::endl;
 
   // Success
   return 0;

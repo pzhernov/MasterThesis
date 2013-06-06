@@ -4,6 +4,7 @@
 #include <cmath>
 #include <map>
 #include <vector>
+#include <iostream>
 
 Graph::Graph() : vertex(0) {
 }
@@ -30,7 +31,7 @@ bool Graph::GetEdge(int first_vertex, int second_vertex) {
   return edges.find(std::make_pair(first_vertex, second_vertex)) != edges.end();
 }
 
-double Graph::EstimateKsi() {
+double Graph::EstimateXi() {
   // Evaluate vertex degrees
   std::vector<int> vertex_degree(GetVertexCount(), 0);
   for (std::set<std::pair<int, int> >::iterator edge = edges.begin();
@@ -50,19 +51,13 @@ double Graph::EstimateKsi() {
       ++count_vertex_degree[degree];
     }
   }
-  std::vector<double> probability;
-  for (int index = 0; index < vertex_degree.size(); ++index) {
-    double P = static_cast<double>(count_vertex_degree[vertex_degree[index]]);
-    P /= GetVertexCount();
-    probability.push_back(P);
-  }
 
-  // P = c * d^(-ksi)
-  // ln(P) = ln(c) - ksi * ln(d)
+  // P = c * d^(-xi)
+  // ln(P) = ln(c) - xi * ln(d)
   // y_t = a + b * x_t + epsilon_t
   // y_t = ln(P)
   // a = ln(c)
-  // b = ksi
+  // b = xi
   // x_t = -ln(d)
   
   double xy = 0;
@@ -71,16 +66,23 @@ double Graph::EstimateKsi() {
   double xx = 0;
   int count = 0;
   
-  for (int index = 0; index < vertex_degree.size(); ++index) {
+  for (std::map<int, int>::iterator iter = count_vertex_degree.begin();
+       iter != count_vertex_degree.end(); ++iter) {
+    double degree = iter->first;
+    double probability = iter->second;
+    probability /= GetVertexCount();
     const double EPS = 1e-9;
-    if (vertex_degree[index] > 0 && probability[index] >= EPS) {
-      double dx = -log(static_cast<double>(vertex_degree[index]));
-      double dy = log(probability[index]);
+    if (degree > 1 && probability >= EPS) {
+      double dx = -log(degree);
+      double dy = log(probability);
       xy += dx * dy;
       x += dx;
       y += dy;
       xx += dx * dx;
       ++count;
+      
+      // Uncomment this line to output points to build a plot
+      // std::cerr << degree << ' ' << probability << std::endl;
     }
   }
 
@@ -90,6 +92,11 @@ double Graph::EstimateKsi() {
   xx /= count;
   
   // Ordinary least squares (OLS)
-  double ksi = (xy - x * y) / (xx - x * x);
-  return ksi;
+  double xi = (xy - x * y) / (xx - x * x);
+  
+  // Uncomment these lines to output constant to build a line on plot
+  // double c = y - xi * x;
+  // std::cout << "c = " << exp(c) << std::endl;
+  
+  return xi;
 }
