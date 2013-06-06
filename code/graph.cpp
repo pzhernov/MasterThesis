@@ -33,15 +33,12 @@ bool Graph::GetEdge(int first_vertex, int second_vertex) {
 double Graph::EstimateKsi() {
   // Evaluate vertex degrees
   std::vector<int> vertex_degree(GetVertexCount(), 0);
-  //std::vector<int> vertex_in_degree(GetVertexCount(), 0);
-  //std::vector<int> vertex_out_degree(GetVertexCount(), 0);
   for (std::set<std::pair<int, int> >::iterator edge = edges.begin();
        edge != edges.end(); ++edge) {
     ++vertex_degree[edge->first];
     ++vertex_degree[edge->second];
-    //++vertex_out_degree[edge->first];
-    //++vertex_in_degree[edge->second];
   }
+  
   // Evaluate probabilities
   std::map<int, int> count_vertex_degree;
   for (int index = 0; index < vertex_degree.size(); ++index) {
@@ -67,14 +64,16 @@ double Graph::EstimateKsi() {
   // a = ln(c)
   // b = ksi
   // x_t = -ln(d)
+  
   double xy = 0;
   double x = 0;
   double y = 0;
   double xx = 0;
   int count = 0;
+  
   for (int index = 0; index < vertex_degree.size(); ++index) {
-    const double EPS = 0.000000001;
-    if (vertex_degree[index] > 10 && probability[index] >= EPS) {
+    const double EPS = 1e-9;
+    if (vertex_degree[index] > 0 && probability[index] >= EPS) {
       double dx = -log(static_cast<double>(vertex_degree[index]));
       double dy = log(probability[index]);
       xy += dx * dy;
@@ -89,6 +88,8 @@ double Graph::EstimateKsi() {
   x /= count;
   y /= count;
   xx /= count;
-  double ksi = (xy - x * y) / (xx - x * x); // Ordinary least squares (OLS)
+  
+  // Ordinary least squares (OLS)
+  double ksi = (xy - x * y) / (xx - x * x);
   return ksi;
 }

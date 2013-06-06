@@ -17,12 +17,15 @@ RealGraph::~RealGraph() {
 }
 
 void RealGraph::LoadRealGraph(const std::string& links) {
-  const int MAX_BUFFER_SIZE = 1000000;
+  const int MAX_BUFFER_SIZE = 1000000; // Max input line length in the file
   std::string str;
   std::set<int> uniq_ids;
   std::vector<std::pair<int, int> > id_edges;
   std::ifstream links_ifs(links.c_str());
   char buffer[MAX_BUFFER_SIZE];
+  
+  // Read input file and save all the ids in the uniq_ids set
+  // and all the edges in the id_edges vector. Skip host names and -1 ids
   while (!links_ifs.eof()) {
     getline(links_ifs, str);
     if (links_ifs.good()) {
@@ -40,6 +43,8 @@ void RealGraph::LoadRealGraph(const std::string& links) {
       }
     }
   }
+  
+  // Renumber all the ids in 0 to vertex count
   std::map<int, int> ids;
   int vertex_count = 0;
   for (std::set<int>::iterator id = uniq_ids.begin();
@@ -47,6 +52,8 @@ void RealGraph::LoadRealGraph(const std::string& links) {
     ids[*id] = vertex_count;
     ++vertex_count;
   }
+  
+  // Set vertex count and edges with renumbered vertices
   SetVertexCount(vertex_count);
   for (std::vector<std::pair<int, int> >::iterator edge = id_edges.begin();
        edge != id_edges.end(); ++edge) {
